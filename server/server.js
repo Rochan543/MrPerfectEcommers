@@ -49,7 +49,7 @@ mongoose
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://mrprefectfasionclub.netlify.app", // ✅ NO trailing slash
+  "https://mrprefectfashionclub.netlify.app", // ✅ NO trailing slash
 ];
 
 app.use(
