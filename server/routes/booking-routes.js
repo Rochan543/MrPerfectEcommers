@@ -8,9 +8,10 @@ const {
   sendPaymentRequest,
 } = require("../controllers/booking-controller");
 
-// 🔒 IMPORT AUTH MIDDLEWARE (ADDED – NO LOGIC CHANGE)
+// 🔒 IMPORT AUTH & ADMIN MIDDLEWARE (NO LOGIC CHANGE)
 const {
   authMiddleware,
+  adminMiddleware,
 } = require("../controllers/auth/auth-controller");
 
 const router = express.Router();
@@ -31,26 +32,40 @@ const upload = multer({ storage });
 
 /* ==============================
    USER ROUTES
-   (ONLY PROTECTED – NOT MODIFIED)
 ================================ */
 
-// ✅ Booking will now be linked to logged-in user
+// ✅ Booking linked to logged-in user (UNCHANGED)
 router.post("/create", authMiddleware, createBooking);
 
-// ✅ User bookings will work correctly
+// ✅ Fetch logged-in user's bookings (UNCHANGED)
 router.get("/user", authMiddleware, getUserBookings);
 
 /* ==============================
    ADMIN ROUTES
+   (SECURED – FUNCTIONALITY SAME)
 ================================ */
 
-router.get("/admin/all", getAllBookings);
+// ✅ Get all bookings (ADMIN ONLY)
+router.get(
+  "/admin/all",
+  authMiddleware,
+  adminMiddleware,
+  getAllBookings
+);
 
-router.put("/admin/:id/status", updateBookingStatus);
+// ✅ Update booking status (ADMIN ONLY)
+router.put(
+  "/admin/:id/status",
+  authMiddleware,
+  adminMiddleware,
+  updateBookingStatus
+);
 
-// 🔥 ADMIN: UPLOAD QR + SEND EMAIL
+// ✅ Upload payment QR + send email (ADMIN ONLY)
 router.post(
   "/admin/:id/payment-qr",
+  authMiddleware,
+  adminMiddleware,
   upload.single("qr"),
   sendPaymentRequest
 );
