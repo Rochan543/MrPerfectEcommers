@@ -36,38 +36,48 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* ======================
-   DATABASE
+   DATABASE CONNECTION
 ====================== */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 /* ======================
-   🔥 CORS (FINAL FIX)
+   CORS CONFIG (FIXED)
 ====================== */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://mrperfectfashionclub.netlify.app/", // ✅ NO trailing slash
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow Postman, Render health checks
+      // Allow server-to-server & Postman
       if (!origin) return callback(null, true);
 
-      // ✅ Allow ALL Netlify subdomains safely
-      if (
-        origin.endsWith(".netlify.app") ||
-        origin.includes("localhost")
-      ) {
-        return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error("❌ CORS BLOCKED:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
-
-      console.error("❌ Blocked by CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control",
+      "Expires",
+      "Pragma",
+    ],
   })
 );
 
-// ✅ Handle preflight properly
+// ✅ REQUIRED for preflight requests
 app.options("*", cors());
 
 /* ======================
@@ -106,19 +116,19 @@ app.use("/api/common/feature", commonFeatureRouter);
 // BOOKINGS
 app.use("/api/bookings", bookingRoutes);
 
-// STATIC FILES
+// STATIC FILES (uploads / QR / images)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* ======================
-   HEALTH CHECK
+   HEALTH CHECK (OPTIONAL)
 ====================== */
 app.get("/", (req, res) => {
-  res.send("API running successfully 🚀");
+  res.send("API is running successfully 🚀");
 });
 
 /* ======================
-   START SERVER
+   SERVER START
 ====================== */
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
