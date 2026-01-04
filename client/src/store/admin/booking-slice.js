@@ -8,7 +8,12 @@ import { API_URL } from "@/config/apiConfig";
 export const fetchAllBookings = createAsyncThunk(
   "adminBookings/fetchAll",
   async () => {
-    const res = await axios.get(`${API_URL}/api/bookings/admin/all`);
+    const res = await axios.get(
+      `${API_URL}/api/bookings/admin/all`,
+      {
+        withCredentials: true, // 🔥 ADDED (required for admin auth)
+      }
+    );
     return res.data.data;
   }
 );
@@ -19,7 +24,13 @@ export const fetchAllBookings = createAsyncThunk(
 export const updateBookingStatus = createAsyncThunk(
   "adminBookings/updateStatus",
   async ({ id, status }) => {
-    await axios.put(`${API_URL}/api/bookings/admin/${id}/status`, { status });
+    await axios.put(
+      `${API_URL}/api/bookings/admin/${id}/status`,
+      { status },
+      {
+        withCredentials: true, // 🔥 ADDED
+      }
+    );
     return { id, status };
   }
 );
@@ -34,6 +45,7 @@ export const sendPaymentQr = createAsyncThunk(
       `${API_URL}/api/bookings/admin/${id}/payment-qr`,
       data,
       {
+        withCredentials: true, // 🔥 ADDED
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -79,7 +91,8 @@ const adminBookingSlice = createSlice({
           (b) => b._id === action.payload.id
         );
         if (booking) {
-          booking.paymentQr = action.payload.paymentQr || booking.paymentQr;
+          booking.paymentQr =
+            action.payload.paymentQr || booking.paymentQr;
           booking.status = "contacted";
         }
       });
