@@ -85,13 +85,12 @@ const loginUser = async (req, res) => {
 
     // 2. Find user
     const user = await User.findOne({ email });
-    if  (!user) {
-    return res.status(401).json({
-    success: false,
-    message: "Invalid credentials",
-  });
-}
-
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
 
     // 3. Compare password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -114,12 +113,18 @@ const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // 5. Set cookie (HTTPS + cross-domain safe)
+    // 5. Set cookie (🔥 FIXED FOR PRODUCTION)
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+
+        // 🔥 REQUIRED for Netlify → Render
+        secure: true,
+        sameSite: "none",
+
+        // 🔥 VERY IMPORTANT (booking & admin APIs)
+        path: "/",
+
         maxAge: 60 * 60 * 1000,
       })
       .status(200)
@@ -149,8 +154,11 @@ const logoutUser = (req, res) => {
   res
     .clearCookie("token", {
       httpOnly: true,
+
+      // 🔥 MUST MATCH LOGIN COOKIE OPTIONS
       secure: true,
       sameSite: "none",
+      path: "/",
     })
     .json({
       success: true,
@@ -183,7 +191,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-
 // =====================
 // ADMIN MIDDLEWARE
 // =====================
@@ -205,5 +212,5 @@ module.exports = {
   loginUser,
   logoutUser,
   authMiddleware,
-  adminMiddleware, // ✅ ADDED
+  adminMiddleware,
 };
