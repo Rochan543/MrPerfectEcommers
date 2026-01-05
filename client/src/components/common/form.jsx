@@ -25,22 +25,31 @@ function CommonForm({
     switch (getControlItem.componentType) {
       case "input":
         element = (
-          <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
-        );
+          <div className="relative">
+            <Input
+              name={getControlItem.name}
+              placeholder={getControlItem.placeholder}
+              id={getControlItem.name}
+              type={getControlItem.type}
+              value={value}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  [getControlItem.name]: event.target.value,
+                })
+              }
+            />
 
+            {/* ✅ RIGHT ICON SUPPORT (EYE ICON) */}
+            {getControlItem.rightIcon && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {getControlItem.rightIcon}
+              </div>
+            )}
+          </div>
+        );
         break;
+
       case "select":
         element = (
           <Select
@@ -66,8 +75,8 @@ function CommonForm({
             </SelectContent>
           </Select>
         );
-
         break;
+
       case "textarea":
         element = (
           <Textarea
@@ -83,24 +92,31 @@ function CommonForm({
             }
           />
         );
-
         break;
 
       default:
         element = (
-          <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
+          <div className="relative">
+            <Input
+              name={getControlItem.name}
+              placeholder={getControlItem.placeholder}
+              id={getControlItem.name}
+              type={getControlItem.type}
+              value={value}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  [getControlItem.name]: event.target.value,
+                })
+              }
+            />
+
+            {getControlItem.rightIcon && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {getControlItem.rightIcon}
+              </div>
+            )}
+          </div>
         );
         break;
     }
@@ -118,6 +134,7 @@ function CommonForm({
           </div>
         ))}
       </div>
+
       <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
         {buttonText || "Submit"}
       </Button>
