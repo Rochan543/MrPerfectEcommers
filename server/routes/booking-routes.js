@@ -6,6 +6,9 @@ const {
   getAllBookings,
   updateBookingStatus,
   sendPaymentRequest,
+  deleteBooking, // ✅ ADDED
+  deleteBookingByUser, // ✅ ADD THIS
+  
 } = require("../controllers/booking-controller");
 
 // 🔒 IMPORT AUTH & ADMIN MIDDLEWARE (NO LOGIC CHANGE)
@@ -69,5 +72,21 @@ router.post(
   upload.single("qr"),
   sendPaymentRequest
 );
+
+// ✅ DELETE booking (ADMIN ONLY) — ADDED
+router.delete(
+  "/admin/:id",
+  authMiddleware,
+  adminMiddleware,
+  deleteBooking
+);
+
+// ✅ USER DELETE BOOKING (SOFT DELETE)
+router.delete(
+  "/user/:id",
+  authMiddleware,
+  deleteBookingByUser
+);
+
 
 module.exports = router;
