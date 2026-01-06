@@ -3,14 +3,13 @@ import {
   ChartNoAxesCombined,
   LayoutDashboard,
   ShoppingBasket,
-  Users, // ✅ ADD THIS
-  MessageSquareText, // ✅ ADD THIS
+  Users,
+  MessageSquareText, // ✅ CHAT ICON
 } from "lucide-react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Megaphone } from "lucide-react";
-
 
 const adminSidebarMenuItems = [
   {
@@ -32,12 +31,11 @@ const adminSidebarMenuItems = [
     icon: <BadgeCheck />,
   },
   {
-    id: "users",                // ✅ ADD THIS BLOCK
+    id: "users",
     label: "Users",
     path: "/admin/users",
     icon: <Users />,
   },
-
   {
     id: "announcements",
     label: "Announcements",
@@ -45,29 +43,35 @@ const adminSidebarMenuItems = [
     icon: <Megaphone />,
   },
   {
-  id: "subscribers",
-  label: "Subscribers",
-  path: "/admin/subscribers",
+    id: "subscribers",
+    label: "Subscribers",
+    path: "/admin/subscribers",
   },
-  { 
-    id: "favorites", 
-    label: "Favorites", 
-    path: "/shop/favorites" 
+  {
+    id: "favorites",
+    label: "Favorites",
+    path: "/shop/favorites",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    path: "/admin/reviews",
+    icon: <MessageSquareText />,
+  },
+
+  /* 🆕 ADMIN CHAT (ADDED – SAFE) */
+  {
+    id: "chat",
+    label: "Chats",
+    path: "/admin/chat",
+    icon: <MessageSquareText />,
   },
 
   {
-  id: "reviews",
-  label: "Reviews",
-  path: "/admin/reviews",
-  icon: <MessageSquareText />,
-},
-  
-{
-  id: "bookings",
-  label: "Bookings",
-  path: "/admin/bookings",
-}
-
+    id: "bookings",
+    label: "Bookings",
+    path: "/admin/bookings",
+  },
 ];
 
 function MenuItems({ setOpen }) {
@@ -97,6 +101,7 @@ function AdminSideBar({ open, setOpen }) {
 
   return (
     <Fragment>
+      {/* MOBILE SIDEBAR */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="w-64">
           <div className="flex flex-col h-full">
@@ -110,13 +115,15 @@ function AdminSideBar({ open, setOpen }) {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* DESKTOP SIDEBAR */}
       <aside className="hidden w-64 flex-col border-r bg-background p-6 lg:flex">
         <div
           onClick={() => navigate("/admin/dashboard")}
           className="flex cursor-pointer items-center gap-2"
         >
           <ChartNoAxesCombined size={30} />
-          <h1 className="text-2xl font-extrabold">Admin Panel</h1>
+          <h1 className="text-2xl font-extrabold">Mr Perfect Admin Panel</h1>
         </div>
         <MenuItems />
       </aside>
