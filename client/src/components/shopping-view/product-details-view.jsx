@@ -13,9 +13,18 @@ import {
 function ProductDetailsView({ productDetails }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { toast } = useToast();
 
+  // ✅ ADDED: get address list (NO side effects)
+  const { addressList } = useSelector((state) => state.shopAddress);
+
+  const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState(null);
+
+  // ✅ ADDED: pick latest address safely (NO UI change)
+  const selectedAddress =
+    addressList && addressList.length > 0
+      ? addressList[addressList.length - 1]
+      : null;
 
   if (!productDetails) return null;
 
@@ -39,14 +48,14 @@ function ProductDetailsView({ productDetails }) {
 
     dispatch(
       addToCart({
-        userId: user.id, // ✅ FIXED (was user._id)
+        userId: user.id,
         productId: productDetails._id,
         quantity: 1,
         size: selectedSize,
       })
     ).then((res) => {
       if (res?.payload?.success) {
-        dispatch(fetchCartItems(user.id)); // ✅ FIXED
+        dispatch(fetchCartItems(user.id));
         toast({ title: "Product added to cart" });
       } else {
         toast({
@@ -77,15 +86,20 @@ function ProductDetailsView({ productDetails }) {
 
     dispatch(
       createBooking({
-        userId: user.id, // ✅ FIXED
+        userId: user.id,
         userName: user.userName,
         email: user.email,
         phone: user.phone || "",
 
+        // ✅ ADDED: shipping snapshot (SAFE, OPTIONAL)
+        address: selectedAddress?.address || "",
+        city: selectedAddress?.city || "",
+        pincode: selectedAddress?.pincode || "",
+        notes: selectedAddress?.notes || "",
+
         productId: productDetails._id,
         productName: productDetails.title,
         productImage: productDetails.image,
-
         size: selectedSize,
       })
     ).then((res) => {
@@ -95,7 +109,7 @@ function ProductDetailsView({ productDetails }) {
           description: "Admin will contact you for payment",
         });
 
-        dispatch(fetchUserBookings(user.id)); // ✅ FIXED
+        dispatch(fetchUserBookings(user.id));
       } else {
         toast({
           title: "Booking failed",
