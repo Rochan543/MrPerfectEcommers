@@ -11,8 +11,10 @@ import { Link, useNavigate } from "react-router-dom";
 const initialState = {
   userName: "",
   email: "",
+  phone: "",      // ✅ ADD
   password: "",
 };
+
 
 function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
