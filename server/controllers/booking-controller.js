@@ -1,6 +1,7 @@
 const Booking = require("../models/Booking");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const Address = require("../models/Address"); // ✅ ADDED
 const { sendPaymentEmail } = require("../utils/email");
 
 /* ===============================
@@ -10,6 +11,12 @@ const createBooking = async (req, res) => {
   try {
     // 🔒 Logged-in user from authMiddleware
     const user = req.user;
+        /* ===============================
+       FETCH USER ADDRESS (SOURCE OF TRUTH)
+    =============================== */
+    const userAddress = await Address.findOne({ userId: user.id }).sort({
+      createdAt: -1,
+    });
 
     /* ===============================
        CREATE BOOKING (UNCHANGED)
@@ -19,7 +26,16 @@ const createBooking = async (req, res) => {
       userName: user.userName,
       email: user.email,
 
-      phone: req.body.phone,
+      // phone: req.body.phone,
+      phone: userAddress?.phone || user.phone || "",
+
+
+      // ✅ ADDRESS SNAPSHOT (ALREADY ADDED BY YOU)
+      address: req.body.address,
+      city: req.body.city,
+      pincode: req.body.pincode,
+      notes: req.body.notes,
+
       productId: req.body.productId,
       productName: req.body.productName,
       productImage: req.body.productImage,
@@ -42,7 +58,7 @@ const createBooking = async (req, res) => {
 
     /* ===============================
        CREATE ORDER FROM BOOKING
-       (ONLY SIZE ADDED – NOTHING ELSE CHANGED)
+       (LOGIC UNCHANGED – ONLY DATA FILLED)
     =============================== */
     await Order.create({
       userId: user.id,
@@ -53,7 +69,7 @@ const createBooking = async (req, res) => {
           title: booking.productName,
           image: booking.productImage,
 
-          size: booking.size, // ✅ ONLY ADDITION (FIX)
+          size: booking.size, // ✅ EXISTING
 
           price,
           quantity,
@@ -61,12 +77,12 @@ const createBooking = async (req, res) => {
       ],
 
       addressInfo: {
-        addressId: null,
-        address: "",
-        city: "",
-        pincode: "",
-        phone: booking.phone,
-        notes: "Created from booking",
+        addressId: userAddress?._id || null,
+        address: userAddress?.address || "",
+        city: userAddress?.city || "",
+        pincode: userAddress?.pincode || "",
+        phone: userAddress?.phone || "",
+        notes: userAddress?.notes || "Created from booking",
       },
 
       orderStatus: "pending",
@@ -121,6 +137,46 @@ const getUserBookings = async (req, res) => {
     });
   }
 };
+
+
+/* ===============================
+   USER: DELETE BOOKING
+=============================== */
+const deleteBookingByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const booking = await Booking.findOne({
+      _id: id,
+      userId,
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    booking.isUserDeleted = true;
+    booking.status = "deleted-by-user";
+
+    await booking.save();
+
+    res.json({
+      success: true,
+      message: "Booking deleted by user",
+    });
+  } catch (error) {
+    console.error("USER DELETE ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete booking",
+    });
+  }
+};
+
 
 /* ===============================
    ADMIN: GET ALL BOOKINGS
@@ -201,6 +257,30 @@ const sendPaymentRequest = async (req, res) => {
   }
 };
 
+
+/* ===============================
+   ADMIN: DELETE BOOKING
+=============================== */
+const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Booking.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Booking deleted successfully",
+    });
+  } catch (error) {
+    console.error("DELETE BOOKING ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete booking",
+    });
+  }
+};
+
+
 /* ===============================
    EXPORTS (UNCHANGED)
 =============================== */
@@ -210,4 +290,6 @@ module.exports = {
   getAllBookings,
   updateBookingStatus,
   sendPaymentRequest,
+  deleteBooking,
+  deleteBookingByUser, // ✅ ADDED
 };
