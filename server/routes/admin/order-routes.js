@@ -23,3 +23,4 @@ router.put("/update/:id", authMiddleware, adminMiddleware, updateOrderStatus);
 router.delete("/delete/:id", authMiddleware, adminMiddleware, deleteOrder);
 
 module.exports = router;
+
