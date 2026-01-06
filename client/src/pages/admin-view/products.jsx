@@ -81,13 +81,20 @@ function AdminProducts() {
         });
   }
 
-  function handleDelete(getCurrentProductId) {
-    dispatch(deleteProduct(getCurrentProductId)).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchAllProducts());
-      }
-    });
-  }
+function handleDelete(getCurrentProductId) {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
+
+  if (!confirmDelete) return;
+
+  dispatch(deleteProduct(getCurrentProductId)).then((data) => {
+    if (data?.payload?.success) {
+      dispatch(fetchAllProducts());
+    }
+  });
+}
+
 
   function isFormValid() {
     return Object.keys(formData)
