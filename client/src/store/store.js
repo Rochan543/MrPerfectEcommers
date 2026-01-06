@@ -17,6 +17,9 @@ import favoritesReducer from "./shop/favorites-slice";
 import shopBookingReducer from "./shop/booking-slice";
 import adminBookingReducer from "./admin/booking-slice";
 
+/* 🆕 CHAT SLICE (ADDED) */
+import chatReducer from "./chat-slice";
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -38,6 +41,9 @@ const store = configureStore({
     favorites: favoritesReducer,
     shopBookings: shopBookingReducer,
     adminBookings: adminBookingReducer,
+
+    /*  CHAT REDUCER (SAFE ADD) */
+    chat: chatReducer,
   },
 });
 
