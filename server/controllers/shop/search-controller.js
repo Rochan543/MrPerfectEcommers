@@ -37,3 +37,4 @@ const searchProducts = async (req, res) => {
 };
 
 module.exports = { searchProducts };
+
