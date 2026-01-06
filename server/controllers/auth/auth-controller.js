@@ -7,7 +7,7 @@ const User = require("../../models/User");
 // =====================
 const registerUser = async (req, res) => {
   try {
-    const { userName, email, password } = req.body;
+    const { userName, email, password, phone } = req.body;
 
     // 1. Validate input
     if (!userName || !email || !password) {
@@ -42,6 +42,7 @@ const registerUser = async (req, res) => {
     await User.create({
       userName,
       email,
+      phone: phone || undefined, // ✅ safe & optional
       password: hashedPassword,
     });
 
@@ -83,8 +84,14 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // 2. Find user
-    const user = await User.findOne({ email });
+        // 2. Find user
+        const user = await User.findOne({
+      $or: [
+        { email: email },
+        { phone: email }, // ✅ phone login support
+      ],
+    });
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -108,6 +115,7 @@ const loginUser = async (req, res) => {
         role: user.role,
         email: user.email,
         userName: user.userName,
+        phone: user.phone, // ✅ ADD THIS
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
