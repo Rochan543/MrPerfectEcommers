@@ -16,6 +16,7 @@ function AdminHeader({ setOpen }) {
         <AlignJustify />
         <span className="sr-only">Toggle Menu</span>
       </Button>
+
       <div className="flex flex-1 justify-end">
         <Button
           onClick={handleLogout}
