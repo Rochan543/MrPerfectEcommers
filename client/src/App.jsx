@@ -20,6 +20,9 @@ import AdminSubscribers from "./pages/admin-view/subscribers";
 import AdminReviews from "./pages/admin-view/reviews";
 import AdminBookings from "./pages/admin-view/bookings";
 
+/* 🆕 ADMIN CHAT */
+import AdminChat from "./pages/admin/AdminChat";
+
 /* SHOP */
 import ShoppingLayout from "./components/shopping-view/layout";
 import ShoppingHome from "./pages/shopping-view/home";
@@ -32,6 +35,9 @@ import SearchProducts from "./pages/shopping-view/search";
 import Favorites from "./pages/shopping-view/favorites";
 import ProductDetailsPage from "./pages/shopping-view/product-details-page";
 import MyBookings from "./pages/shopping-view/my-bookings";
+
+/* 🆕 USER CHAT */
+import UserChat from "./pages/user/UserChat";
 
 /* PUBLIC */
 import PublicLayout from "./components/public-view/layout";
@@ -92,10 +98,13 @@ function App() {
         <Route
           path="/auth"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user} isLoading={isLoading}>
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+              isLoading={isLoading}
+            >
               <AuthLayout />
             </CheckAuth>
-
           }
         >
           <Route path="login" element={<AuthLogin />} />
@@ -113,7 +122,6 @@ function App() {
             >
               <AdminLayout />
             </CheckAuth>
-
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -126,6 +134,9 @@ function App() {
           <Route path="subscribers" element={<AdminSubscribers />} />
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="bookings" element={<AdminBookings />} />
+
+          {/* 🆕 ADMIN CHAT (ADDED – SAFE) */}
+          <Route path="chat" element={<AdminChat />} />
         </Route>
 
         {/* 🛒 SHOP */}
@@ -133,13 +144,12 @@ function App() {
           path="/shop"
           element={
             <CheckAuth
-                isAuthenticated={isAuthenticated}
-                user={user}
-                isLoading={isLoading}
-              >
-                <ShoppingLayout />
-              </CheckAuth>
-
+              isAuthenticated={isAuthenticated}
+              user={user}
+              isLoading={isLoading}
+            >
+              <ShoppingLayout />
+            </CheckAuth>
           }
         >
           <Route path="home" element={<ShoppingHome />} />
@@ -151,9 +161,10 @@ function App() {
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
-
-          {/* ✅ MY BOOKINGS (FIXED) */}
           <Route path="my-bookings" element={<MyBookings />} />
+
+          {/* 🆕 USER CHAT (ADDED – SAFE) */}
+          <Route path="chat" element={<UserChat />} />
         </Route>
 
         {/* 📄 STATIC */}
