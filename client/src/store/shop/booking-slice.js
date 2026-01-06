@@ -24,7 +24,7 @@ export const createBooking = createAsyncThunk(
 );
 
 /* =========================
-   FETCH USER BOOKINGS (BY EMAIL)
+   FETCH USER BOOKINGS
 ========================= */
 export const fetchUserBookings = createAsyncThunk(
   "booking/user",
@@ -34,7 +34,6 @@ export const fetchUserBookings = createAsyncThunk(
         `${API_URL}/api/bookings/user`,
         { withCredentials: true }
       );
-
       return res.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -44,6 +43,25 @@ export const fetchUserBookings = createAsyncThunk(
   }
 );
 
+/* =========================
+   USER DELETE BOOKING (SOFT DELETE)
+========================= */
+export const deleteUserBooking = createAsyncThunk(
+  "booking/deleteUser",
+  async (bookingId, { rejectWithValue }) => {
+    try {
+      await axios.delete(
+        `${API_URL}/api/bookings/user/${bookingId}`,
+        { withCredentials: true }
+      );
+      return bookingId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Delete booking failed"
+      );
+    }
+  }
+);
 
 /* =========================
    SLICE
@@ -84,6 +102,13 @@ const bookingSlice = createSlice({
         state.isLoading = false;
         state.bookings = [];
         state.error = action.payload;
+      })
+
+      /* USER DELETE BOOKING */
+      .addCase(deleteUserBooking.fulfilled, (state, action) => {
+        state.bookings = state.bookings.filter(
+          (b) => b._id !== action.payload
+        );
       });
   },
 });
