@@ -57,6 +57,22 @@ export const sendPaymentQr = createAsyncThunk(
 );
 
 /* =========================
+   DELETE BOOKING (ADMIN)
+========================= */
+export const deleteBooking = createAsyncThunk(
+  "adminBookings/deleteBooking",
+  async (id) => {
+    await axios.delete(
+      `${API_URL}/api/bookings/admin/${id}`,
+      {
+        withCredentials: true, // 🔥 REQUIRED
+      }
+    );
+    return id;
+  }
+);
+
+/* =========================
    SLICE
 ========================= */
 const adminBookingSlice = createSlice({
@@ -95,6 +111,13 @@ const adminBookingSlice = createSlice({
             action.payload.paymentQr || booking.paymentQr;
           booking.status = "contacted";
         }
+      })
+
+      /* DELETE */
+      .addCase(deleteBooking.fulfilled, (state, action) => {
+        state.bookings = state.bookings.filter(
+          (b) => b._id !== action.payload
+        );
       });
   },
 });
