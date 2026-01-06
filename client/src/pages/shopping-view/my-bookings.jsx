@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserBookings } from "@/store/shop/booking-slice";
+import {
+  fetchUserBookings,
+  deleteUserBooking, // ✅ ADDED (REQUIRED)
+} from "@/store/shop/booking-slice";
 import Footer from "@/components/common/Footer";
+
 
 function MyBookings() {
   const dispatch = useDispatch();
@@ -42,6 +46,13 @@ function MyBookings() {
                 {b.status || "pending"}
               </span>
             </p>
+
+                <button
+              onClick={() => dispatch(deleteUserBooking(b._id))}
+              className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+            >
+              Delete Booking
+            </button>
           </div>
         ))}
       </div>
