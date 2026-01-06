@@ -5,6 +5,7 @@ import {
   UserCog,
   Heart,
   CalendarCheck,
+  MessageSquare, // ✅ ADDED
 } from "lucide-react";
 import {
   Link,
@@ -94,7 +95,7 @@ function HeaderRightContent() {
 
   return (
     <div className="flex lg:flex-row flex-col lg:items-center gap-4">
-      {/* FAVORITES */}
+      {/* ❤️ FAVORITES */}
       <Button
         variant="ghost"
         size="icon"
@@ -107,7 +108,17 @@ function HeaderRightContent() {
         </span>
       </Button>
 
-      {/* CART */}
+      {/* 💬 CHAT (ADDED – SAFE) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => navigate("/shop/chat")}
+        className="text-[#d4af37] hover:bg-transparent focus-visible:ring-0"
+      >
+        <MessageSquare className="w-6 h-6" />
+      </Button>
+
+      {/* 🛒 CART */}
       <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
         <Button
           onClick={() => setOpenCartSheet(true)}
@@ -127,7 +138,7 @@ function HeaderRightContent() {
         />
       </Sheet>
 
-      {/* PROFILE */}
+      {/* 👤 PROFILE */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="bg-[#2a1c15] border-none">
