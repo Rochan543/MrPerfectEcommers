@@ -28,6 +28,8 @@ const shopReviewRouter = require("./routes/shop/review-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
 const bookingRoutes = require("./routes/booking-routes");
+const chatRouter = require("./routes/chat/chat-routes");
+
 
 /* ======================
    APP INIT
@@ -99,6 +101,9 @@ app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
 app.use("/api/shop/review", shopReviewRouter);
+
+// CHAT (USER + ADMIN)
+app.use("/api/chat", chatRouter);
 
 // COMMON
 app.use("/api/common/feature", commonFeatureRouter);
