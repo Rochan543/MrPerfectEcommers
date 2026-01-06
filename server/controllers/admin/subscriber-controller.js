@@ -1,30 +1,112 @@
-const Subscriber = require("../../models/Subscriber");
+const ProductReview = require("../../models/Review");
 
-// ADD SUBSCRIBER
-exports.addSubscriber = async (req, res) => {
+// ✅ Get all reviews (Admin)
+const getAllReviews = async (req, res) => {
   try {
-    const { email } = req.body;
+    const reviews = await ProductReview.find()
+      .sort({ createdAt: -1 });
 
-    const exists = await Subscriber.findOne({ email });
-    if (exists) {
-      return res.json({ success: true });
-    }
-
-    const subscriber = new Subscriber({ email });
-    await subscriber.save();
-
-    res.json({ success: true, data: subscriber });
-  } catch (e) {
-    res.status(500).json({ success: false });
+    res.status(200).json({
+      success: true,
+      data: reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch reviews",
+    });
   }
 };
 
-// GET ALL SUBSCRIBERS (ADMIN)
-exports.getSubscribers = async (req, res) => {
+// ✅ Approve / Reject review
+const updateReviewStatus = async (req, res) => {
   try {
-    const subscribers = await Subscriber.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: subscribers });
-  } catch (e) {
-    res.status(500).json({ success: false });
+    const { status } = req.body;
+
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    const review = await ProductReview.findById(req.params.id);
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found",
+      });
+    }
+
+    review.status = status;
+    await review.save();
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update review status",
+    });
   }
+};
+
+// ✅ Admin reply to review
+const replyToReview = async (req, res) => {
+  try {
+    const { reply } = req.body;
+
+    const review = await ProductReview.findById(req.params.id);
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found",
+      });
+    }
+
+    review.adminReply = reply;
+    await review.save();
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add admin reply",
+    });
+  }
+};
+
+// ✅ Admin delete review
+const deleteReview = async (req, res) => {
+  try {
+    const review = await ProductReview.findById(req.params.id);
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found",
+      });
+    }
+
+    await ProductReview.findByIdAndDelete(req.params.id);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete review",
+    });
+  }
+};
+
+module.exports = {
+  getAllReviews,
+  updateReviewStatus,
+  replyToReview,
+  deleteReview, // ✅ ADD
 };
